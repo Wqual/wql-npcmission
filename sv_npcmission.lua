@@ -1,19 +1,9 @@
-ESX = exports["es_extended"]:getSharedObject()
-
-
-RegisterServerEvent('Wql:acquista')
-AddEventHandler('Wql:acquista', function(value)
-    local xPlayer = ESX.GetPlayerFromId(source)
-    local prezzoGrimaldello = 2250 -- Prezzo grimaldello
-
-    if value == 'grimaldello' then
-        if xPlayer.getMoney() >= prezzoGrimaldello then
-            xPlayer.removeMoney(prezzoGrimaldello)
-            xPlayer.addInventoryItem('grimaldello', 1)
-            TriggerClientEvent('ox_lib:notify', xPlayer.source, {type = 'success', description = 'Hai comprato un grimaldello per ' .. prezzoGrimaldello .. '$'})
-        else
-            TriggerClientEvent('ox_lib:notify', xPlayer.source, {type = 'error', description = 'Non hai abbastanza soldi!'})
-        end
-    end
+RegisterNetEvent("SearchMandante", function ()
+    local item = {"valigia"}
+    exports.ox_inventory:AddItem(source, "valigia", 1)
 end)
 
+RegisterNetEvent("vendita_missione", function()
+    exports.ox_inventory:RemoveItem(source, "valigia", 1)
+    exports.ox_inventory:AddItem(source, "black_money", math.random(13000, 23000))
+end)
