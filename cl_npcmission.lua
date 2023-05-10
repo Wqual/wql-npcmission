@@ -1,193 +1,180 @@
 ESX = exports["es_extended"]:getSharedObject()
 
 Citizen.CreateThread(function()
-    if not HasModelLoaded('a_m_y_soucent_02') then
-       RequestModel('a_m_y_soucent_02')
-       while not HasModelLoaded('a_m_y_soucent_02') do
+    if not HasModelLoaded('csb_chin_goon') then
+       RequestModel('csb_chin_goon')
+       while not HasModelLoaded('csb_chin_goon') do
           Citizen.Wait(5)
        end
     end
 
-npc = CreatePed(4, 'a_m_y_soucent_02', -40.7923, -1674.7013, 28.4704, 132.8449, false, true)
+npc = CreatePed(4, 'csb_chin_goon', -429.4413, 1109.6167, 326.6818, 340.9529, false, true)
 FreezeEntityPosition(npc, true)
 SetEntityInvincible(npc, true)
 SetBlockingOfNonTemporaryEvents(npc, true)
 
-local VenditaNpc = false
+
+CreateThread(function()
+   while true do
+       Sleep = 1000
+           local ped = PlayerPedId()
+           local plyCords = GetEntityCoords(ped)
+           local coords = vector3(-429.4413, 1109.6167, 326.6818 + 2)
+           local dist = #( plyCords - coords)
+           if dist < 5 then
+               Sleep = 0
+               SetFloatingHelpTextWorldPosition(1, coords)
+               SetFloatingHelpTextStyle(1, 1, 2, -1, 3, 0)
+               BeginTextCommandDisplayHelp("Indicazione1")
+               EndTextCommandDisplayHelp(2, false, false, -1)
+           end
+       Wait(Sleep)
+   end
+end)
+
+local startveicolo = true
+
 local options = {
-    
     {
-        name = 'ox:miky',
-        event = 'Wql:acquista',
-        icon = 'fa-solid fa-road',
-        label = '💸 Acquista Grimaldello',
-        canInteract = function(entity)
-            return not IsEntityDead(entity)
-        end
-    },
-    {
-        name = 'ox:furtocasa',
+        name = 'ox:mandante',
         onSelect = function()
-        Wqual() end,
-        icon = 'fa-solid fa-road',
-        label = '🏠 Civico Casa',
+            startveicolo = false
+            Wqual() end,
+        icon = 'fa-solid fa-person-rifle',
+        label = '💀 Uccidi Mandante',
+        canInteract = function(entity)
+            return not IsEntityDead(entity) and startveicolo
+        end
+    }
+}
+
+local optionNames = { 'ox:mrbosic'}
+exports.ox_target:addLocalEntity(npc,options)
+
+
+end)
+
+
+Wqual = function()
+    lavoro = true
+    ESX.Game.SpawnVehicle('burrito3', vector3(-408.9817, 1183.1298, 325.5564), 85.29, function(v)
+        SetPedIntoVehicle(PlayerPedId(), v, -1)
+    end)
+    ESX.ShowNotification('Raggiungi la posizione e uccidi il mandante!')
+    waypoint5 = SetNewWaypoint(3334.8523, 5163.3628, 18.3227)
+    Wql = AddBlipForCoord(3334.8523, 5163.3628, 18.3227)
+    SetBlipSprite (Wql, 156)
+    SetBlipDisplay(Wql, 6)
+    SetBlipScale  (Wql, 0.9)
+    SetBlipColour (Wql, 0)
+    SetBlipAsShortRange(Wql, true)
+
+    BeginTextCommandSetBlipName('STRING')
+    AddTextComponentString("[Mandante]")
+    EndTextCommandSetBlipName(Wql)
+    
+end 
+
+
+Citizen.CreateThread(function()
+    if not HasModelLoaded('s_m_y_dealer_01') then
+       RequestModel('s_m_y_dealer_01')
+       while not HasModelLoaded('s_m_y_dealer_01') do
+          Citizen.Wait(5)
+       end
+    end
+
+npc = CreatePed(4, 's_m_y_dealer_01', 3334.7817, 5161.9512, 17.2999, 286.8217, false, true)
+FreezeEntityPosition(npc, true)
+SetEntityInvincible(npc, false)
+SetBlockingOfNonTemporaryEvents(npc, true)
+
+local perquisizione = true
+
+local options = {
+    {
+        name = 'ox:option1',
+        icon = 'fa-sharp fa-solid fa-hand',
+        label = 'Perquisisci Mandante',
+
+        canInteract = function(entity, distance, coords, name, bone)
+            return IsEntityDead(entity) and perquisizione
+        end,
+
+        onSelect = function(data)
+            if lib.progressBar({
+                duration = 5000,
+                ESX.ShowNotification('Hai ucciso il mandante! Cerca nelle sue tasche...'),
+                label = 'Cercando nelle tasche...',
+                useWhileDead = false,
+                canCancel = true,
+                disable = {
+                    car = true,
+                },
+                anim = {
+                    dict = 'mini@repair',
+                    clip = 'fixing_a_ped'
+                }
+            }) then
+                ESX.ShowNotification('Ora possiedi la valiggetta! Raggiungi gps impostato')
+                waypoint5 = SetNewWaypoint(-35.5588, 2871.5527, 59.6102)
+                Wql2 = AddBlipForCoord(-35.5588, 2871.5527, 59.6102)
+                print("ciao")
+                SetBlipSprite (Wql2, 351)
+                SetBlipDisplay(Wql2, 6)
+                SetBlipScale  (Wql2, 1.3)
+                SetBlipColour (Wql2, 56)
+                SetBlipAsShortRange(Wql2, true)
+
+                BeginTextCommandSetBlipName('STRING')
+                AddTextComponentString("[Punto di consegna]")
+                EndTextCommandSetBlipName(Wql2)
+                
+                TriggerServerEvent("SearchMandante")
+                perquisizione = false
+
+            end
+        end
+        
+    }
+}
+
+exports.ox_target:addLocalEntity(npc, options)
+
+end)
+
+Citizen.CreateThread(function()
+    if not HasModelLoaded('ig_claypain') then
+       RequestModel('ig_claypain')
+       while not HasModelLoaded('ig_claypain') do
+          Citizen.Wait(5)
+       end
+    end
+
+npc = CreatePed(4, 'ig_claypain', -35.5588, 2871.5527, 58.6102, 160.5027, false, true)
+FreezeEntityPosition(npc, true)
+SetEntityInvincible(npc, true)
+SetBlockingOfNonTemporaryEvents(npc, true)
+
+local vendita = {
+    {
+        name = 'ox:vendita',
+        icon = 'fa-solid fa-money-bill',
+        label = 'Consegna Valigetta',
+        onSelect = function()
+            local chechitem = exports.ox_inventory:Search('count', 'valigia')
+            if chechitem >= 1 then
+                TriggerServerEvent("vendita_missione")
+                RemoveBlip(Wql)
+                RemoveBlip(Wql2)
+            end
+        end,
         canInteract = function(entity)
             return not IsEntityDead(entity)
         end
     }
 }
 
-local optionNames = { 'ox:miky'}
-exports.ox_target:addLocalEntity(npc,options)
-
+exports.ox_target:addLocalEntity(npc,vendita)
 
 end)
-
-local VenditaNpc = nil
-
-RegisterNetEvent('Wql:acquista')
-AddEventHandler('Wql:acquista', function(value)
-    VenditaNpc = value
-end)
-
-RegisterNetEvent('Wql:acquista') 
-AddEventHandler('Wql:acquista', function()
-    local Ped = PlayerPedId()
-    local input = lib.inputDialog('Parla con Miky', {
-        {type = 'select', label = 'Vendita di grimaldelli', options = {
-            {label = "Grimaldello", value = "grimaldello"}
-        }},
-    })
-    
-    if input and #input > 0 then
-        TriggerServerEvent('Wql:acquista', input[1])
-    end
-end)
-
-Wqual = function()
-    lavoro = true
-    ESX.Game.SpawnVehicle('burrito3', vector3(-46.6498, -1678.5007, 29.3876), 85.29, function(v)
-        SetPedIntoVehicle(PlayerPedId(), v, -1)
-    end)
-    ESX.ShowNotification('Raggiungi la casa da rapinare!')
-    waypoint5 = SetNewWaypoint(-149.9468, 123.9495, 70.2254)
-    Wql = AddBlipForCoord(-149.9468, 123.9495, 70.2254)
-    SetBlipSprite (Wql, 40)
-    SetBlipDisplay(Wql, 6)
-    SetBlipScale  (Wql, 0.8)
-    SetBlipColour (Wql, 2)
-    SetBlipAsShortRange(Wql, true)
-
-    BeginTextCommandSetBlipName('STRING')
-    AddTextComponentString("Casa da rapinare")
-    EndTextCommandSetBlipName(Wql)
-    
-end 
-
-
-local casaPopolareEntrata = {
-    coords = Wql.EntrataCasa,
-    size = vec3(2, 2, 2),
-    rotation = 45,
-    debug = drawZones,
-    options = {
-        {
-            name = 'casepopolari',
-            icon = 'fa-solid fa-home',
-            label = Wql.Traduzione["entra"],
-            onSelect = function(data)
-                -- Controlla se il giocatore ha la chiave per entrare nella casa popolare
-                if HasKey("grimaldello") then -- Item 
-                    DoScreenFadeOut(800)
-                    while not IsScreenFadedOut() do
-                        Citizen.Wait(0)
-                    end
-                    TriggerServerEvent('entraincasa')
-                    SetEntityCoords(PlayerPedId(), Wql.TeleportEntrata)
-                    DoScreenFadeIn(800)
-                else
-                    -- Mostra un messaggio di errore se il giocatore non ha la chiave
-					lib.notify({
-						title = 'Casa Popolare',
-						description = 'Non hai la chiave per entrare in casa!',
-						type = 'error'
-					})
-                    
-                end
-            end,
-        },
-    },
-}
-
-
--- Definisci la zona di uscita dalla casa popolare
-local casaPopolareUscita = {
-    coords = Wql.UscitaCasa,
-    size = vec3(2, 2, 2),
-    rotation = 45,
-    debug = drawZones,
-    options = {
-        {
-            name = 'casepopolariuscita',
-            icon = 'fa-solid fa-home',
-            label = Wql.Traduzione["esci"],
-            onSelect = function(data)
-                -- Controlla se il giocatore ha la chiave per entrare nella casa popolare
-                if HasKey("grimaldello") then -- Item 
-                    DoScreenFadeOut(800)
-                    while not IsScreenFadedOut() do
-                        Citizen.Wait(0)
-                    end
-                    TriggerServerEvent('escidallacasa')
-                    SetEntityCoords(PlayerPedId(), Wql.TeleportUscita)
-                    DoScreenFadeIn(800)
-                else
-                    -- Mostra un messaggio di errore se il giocatore non ha la chiave
-					lib.notify({
-						title = 'Casa Popolare',
-						description = 'Non hai la chiave per uscire di casa!',
-						type = 'error'
-					})
-                    
-                end
-            end,
-        },
-    },
-}
-
--- Aggiungi le zone al sistema di trigger della mappa
-Citizen.CreateThread(function()
-    exports.ox_target:addBoxZone(casaPopolareEntrata)
-    exports.ox_target:addBoxZone(casaPopolareUscita)
-end)
-
-function HasKey(keyName)
-    local player = GetPlayerPed(-1)
-    local inventory = ESX.GetPlayerData().inventory
-    for i = 1, #inventory do
-        local item = inventory[i]
-        if item and item.name == keyName then
-            return true
-        end
-    end
-    return false
-end
-
-exports.ox_target:addBoxZone({
-	coords = Wql.FrigoPopolare,
-	size = vec3(2, 2, 2),
-	rotation = 45,
-	debug = drawZones,
-	options = {
-		{
-			name = 'casepopolari',
-			icon = 'fa-solid fa-home',
-			label = Wql.Traduzione["frigobar"],
-			onSelect = function(data)
-				-- Frigo Bar delle case popolari
-			exports.ox_inventory:openInventory('shop', { type = 'RapinaCasa', id = 1})
-			
-			end,
-		}
-	}
-})
