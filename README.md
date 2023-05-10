@@ -11,6 +11,6 @@ Dependencies:
 		stack = false,
 		close = true,
 		description = 'Consegna la valigetta al collega di Milos'
-	},```
+	},
 
 https://easyupload.io/0uf0sx
