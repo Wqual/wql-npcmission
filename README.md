@@ -5,12 +5,17 @@ Dependencies:
 - ox_inventory
 - PolyZone
 
-```lua	["valigia"] = {
+**Instalation**
+
+> ox_inventory/data/items.lua
+```lua
+	['valigia'] = {
 		label = "Valigetta",
 		weight = 10,
 		stack = false,
 		close = true,
 		description = 'Consegna la valigetta al collega di Milos'
 	},
+```
 
 https://easyupload.io/0uf0sx
